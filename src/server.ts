@@ -1,50 +1,48 @@
 import http from 'http';
 import express from 'express';
-// import './config/config';
-// import  './config/logging';
 import logging from './config/logging';
-
-// import * as logging from './config/logging';
 import { loggingHandler } from './middleware/loggingHandler';
 import { corsHandler } from './middleware/corsHandler';
 import { routeNotFound } from './middleware/routeNotFound';
+import authRoutes from './routes/auth.route';
 
-export const router = express();
-// export const application = express();
+export const application = express();
+
 export let httpServer: ReturnType<typeof http.createServer>;
 
 export const Main = () => {
     logging.info('------------------------------');
     logging.info('Initializing API');
     logging.info('------------------------------');
-    router.use(express.urlencoded({ extended: true }));
-    router.use(express.json());
+    application.use(express.urlencoded({ extended: true }));
+    application.use(express.json());
 
     logging.info('------------------------------');
     logging.info('Logging and Configuration');
     logging.info('------------------------------');
-    router.use(loggingHandler);
-    router.use(corsHandler);
+    application.use(loggingHandler);
+    application.use(corsHandler);
 
     logging.info('------------------------------');
     logging.info('Define Controllers and Routes');
     logging.info('------------------------------');
-    router.get('/main/healthCheck', (req, res) => {
+    application.get('/main/healthCheck', (req, res) => {
         return res.status(200).json({
             message: 'API is running',
             timestamp: new Date().toISOString()
         });
     });
+    application.use('/api/auth', authRoutes);
 
     logging.info('------------------------------');
     logging.info('Define Middleware and Error Handlers');
     logging.info('------------------------------');
-    router.use(routeNotFound);
+    application.use(routeNotFound);
 
     logging.info('------------------------------');
     logging.info('Starting HTTP Server');
     logging.info('------------------------------');
-    httpServer = http.createServer(router);
+    httpServer = http.createServer(application);
     httpServer.listen(process.env.SERVER_PORT, () => {
         logging.info('------------------------------');
         logging.info(
