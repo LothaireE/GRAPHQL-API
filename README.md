@@ -2,7 +2,7 @@
 
 A basic RESTful API built with **Node.js**, **Express**, and **TypeScript**.
 
-## 🚀 Features
+## Features
 
 -   Modular project structure using TypeScript
 -   Custom logging middleware
@@ -12,7 +12,7 @@ A basic RESTful API built with **Node.js**, **Express**, and **TypeScript**.
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 git clone https://github.com/LothaireE/BASE-API.git
