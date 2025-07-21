@@ -1,20 +1,5 @@
 import { TEST } from '../config/config';
 
-// import { TEST } from './config.js';
-
-// export const LOG_LEVEL = process.env.LOG_LEVEL || (TEST ? 'debug' : 'info');
-
-// export const LOG_FORMAT = process.env.LOG_FORMAT || 'combined';
-
-// export const LOG_FILE = process.env.LOG_FILE || 'app.log';
-
-// export const LOG_CONFIG = {
-//     level: LOG_LEVEL,
-//     format: LOG_FORMAT,
-//     file: LOG_FILE,
-//     silent: TEST
-// };
-
 const colours = {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -151,7 +136,6 @@ declare global {
     };
 }
 
-/** Inject the logging module into the global scope. No need to import it in every file. */
 globalThis.logging = logging;
 
 export default logging;

@@ -3,8 +3,7 @@ import express from 'express';
 import logging from './config/logging';
 import { loggingHandler } from './middleware/loggingHandler';
 import { corsHandler } from './middleware/corsHandler';
-import { routeNotFound } from './middleware/routeNotFound';
-import authRoutes from './routes/auth.route';
+import setupRoutes from './routes/routes';
 
 export const application = express();
 
@@ -24,20 +23,9 @@ export const Main = () => {
     application.use(corsHandler);
 
     logging.info('------------------------------');
-    logging.info('Define Controllers and Routes');
+    logging.info('Setup Routes and Controllers');
     logging.info('------------------------------');
-    application.get('/main/healthCheck', (req, res) => {
-        return res.status(200).json({
-            message: 'API is running',
-            timestamp: new Date().toISOString()
-        });
-    });
-    application.use('/api/auth', authRoutes);
-
-    logging.info('------------------------------');
-    logging.info('Define Middleware and Error Handlers');
-    logging.info('------------------------------');
-    application.use(routeNotFound);
+    setupRoutes(application); // setupRoutes(controllers, application, routes);
 
     logging.info('------------------------------');
     logging.info('Starting HTTP Server');

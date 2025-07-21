@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { application, Shutdown } from '../../src/server';
-import { routeNotFound } from '../../src/middleware/routeNotFound';
 
 describe('Server Integration Tests', () => {
     afterAll((done) => {

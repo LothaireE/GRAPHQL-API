@@ -7,7 +7,8 @@ import { login, signup } from '../controller/auth.controller';
 // Create a new router instance
 const authRouter = Router();
 
-authRouter.post('/login', login);
-authRouter.post('/signup', signup);
+// POST
+authRouter.post('/auth/login', login);
+authRouter.post('/auth/signup', signup);
 
 export default authRouter;
