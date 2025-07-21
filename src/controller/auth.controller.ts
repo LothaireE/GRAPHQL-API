@@ -1,21 +1,11 @@
 import { Request, Response } from 'express';
+// import logging from '../config/logging';
 
 export function login(req: Request, res: Response) {
-    // // logic to implement
-    // const { username, password } = req.body;
+    // // logic to implement here
+    const { name } = req.body;
 
-    // // Validate the user credentials against a database
-    // if (!username || !password) {
-    //     return res.status(400).json({
-    //         message: 'Username and password are required',
-    //         timestamp: new Date().toISOString()
-    //     });
-    // }
-    // // Check the credentials against a database
-    // // For this example, we will assume the credentials are valid
-
-    // // Respond with a success message
-    // logging.info(`User ${username} logged in successfully`);
+    logging.info(`User ${name} logged in successfully`);
 
     // // Return a success response
     // // Would also generate a token here and send it back to the client
@@ -26,26 +16,16 @@ export function login(req: Request, res: Response) {
 }
 
 export function signup(req: Request, res: Response) {
-    // // logiqc to implement
-    // const { username, password } = req.body;
-
-    // // Validate the user credentials
-    // if (!username || !password) {
-    //     return res.status(400).json({
-    //         message: 'Username and password are required',
-    //         timestamp: new Date().toISOString()
-    //     });
-    // }
+    // // logic to implement here
+    const { name } = req.body;
 
     // // Save the user to a database
-    // // For this example, we will assume the signup is successful
 
-    // // Respond with a success message
-    // // logging.info(`User ${username} signed up successfully`);
+    logging.info(`User ${name} signed up successfully`);
 
     // // Return a success response
     // // Would also generate a token here and send it back to the client
-    // logging.info(`User ${username} signed up successfully`);
+
     return res.status(201).json({
         message: 'User signed up successfully',
         timestamp: new Date().toISOString()
