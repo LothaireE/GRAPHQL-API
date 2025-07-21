@@ -2,6 +2,12 @@
 
 A basic RESTful API built with **Node.js**, **Express**, and **TypeScript**.
 
+## Basic routes setup :
+
+-   Auth routes with handcraft minimal validation schemas(to replace with a
+    proper library of your choice: zod, joi, etc)
+-   Main routes
+
 ## Features
 
 -   Modular project structure using TypeScript
@@ -19,6 +25,33 @@ A basic RESTful API built with **Node.js**, **Express**, and **TypeScript**.
 git clone https://github.com/LothaireE/BASE-API.git
 cd BASE-API
 npm install
+npm install -g nodemon ts-node typescript
+```
+
+## Usage
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+or
+
+```bash
+nodemon src/server.ts
+```
+
+Build the project for production:
+
+```bash
+npm run build
+```
+
+Start the production server:
+
+```bash
+npm start
 ```
 
 ## Test Coverage Report
@@ -43,3 +76,13 @@ bar:
     file:///absolute/path/to/BASE-API/coverage/lcov-report/index.html
 
 You will see a visual, navigable coverage report for your codebase.
+
+## Environment Variables
+
+Duplicate `.env.example` file in the root directory, rename it `.env` and add
+your own variables to it following example below:
+
+```env
+SERVER_PORT=3000
+SERVER_HOSTNAME="localhost"
+```

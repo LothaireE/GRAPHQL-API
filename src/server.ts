@@ -11,7 +11,9 @@ export let httpServer: ReturnType<typeof http.createServer>;
 
 export const Main = () => {
     logging.info('------------------------------');
-    logging.info('Initializing API');
+    logging.info(
+        `Initializing API in ${process.env.NODE_ENV?.toUpperCase()} mode`
+    );
     logging.info('------------------------------');
     application.use(express.urlencoded({ extended: true }));
     application.use(express.json());

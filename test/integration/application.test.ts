@@ -11,6 +11,12 @@ describe('Server Integration Tests', () => {
         expect(application).toBeDefined();
     }, 10000);
 
+    it('main/healthcheck performs correctly and API runs smoothly', async () => {
+        const res = await request(application).get('/api/main/healthcheck');
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe('API is running');
+    });
+
     it('returns all the options allowed to be called by customer (http methods)', async () => {
         const response = await request(application).options('/');
         expect(response.status).toBe(200);

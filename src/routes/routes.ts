@@ -12,5 +12,5 @@ export default function setupRoutes(
     // routes: RouteHandler
 ) {
     application.use('/api', [healthCheckRoutes, authRoutes]);
-    application.use(routeNotFound);
+    application.use(routeNotFound); // Catch-all route for undefined routes, must be last.
 }

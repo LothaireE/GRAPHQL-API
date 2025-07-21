@@ -4,8 +4,10 @@
     "description": "A basic api in Node JS with Typescript.",
     "main": "src/server.ts",
     "scripts": {
-        "test": "jest --config jest.config.ts --coverage",
-        "build": "rm -rf build/ && tsc -p tsconfig.build.json"
+        "test": "NODE_ENV=test jest --config jest.config.ts --coverage",
+        "build": "rm -rf build/ && tsc -p tsconfig.build.json",
+        "dev": "NODE_ENV=development nodemon --watch src --exec ts-node src/server.ts",
+        "start": "NODE_ENV=production node build/server.js"
     },
     "author": "",
     "license": "",
