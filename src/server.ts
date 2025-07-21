@@ -1,46 +1,66 @@
 import http from 'http';
 import express from 'express';
-import logging from './config/logging';
+import mongoose from 'mongoose';
+import './config/logging';
+
 import { loggingHandler } from './middleware/loggingHandler';
 import { corsHandler } from './middleware/corsHandler';
 import setupRoutes from './routes/routes';
+import { mongo } from './config/config';
 
 export const application = express();
 
 export let httpServer: ReturnType<typeof http.createServer>;
 
-export const Main = () => {
-    logging.info('------------------------------');
-    logging.info(
+export const Main = async () => {
+    logging.log('------------------------------------------');
+    logging.log(
         `Initializing API in ${process.env.NODE_ENV?.toUpperCase()} mode`
     );
-    logging.info('------------------------------');
+    logging.log('------------------------------------------');
     application.use(express.urlencoded({ extended: true }));
     application.use(express.json());
+    logging.log('------------------------------------------');
+    logging.log('Initializing connection to Mongo');
+    logging.log('------------------------------------------');
+    try {
+        const connection = await mongoose.connect(
+            mongo.MONGO_CONNECTION,
+            mongo.MONGO_OPTION
+        );
+        logging.log('------------------------------------------');
+        logging.log(`Connected to Mongo using version: ${connection.version}`);
+        logging.log('------------------------------------------');
+    } catch (error) {
+        logging.log('------------------------------------------');
+        logging.info('Unable to connect to Mongo');
+        logging.error(error);
+        logging.log('------------------------------------------');
+    }
 
-    logging.info('------------------------------');
-    logging.info('Logging and Configuration');
-    logging.info('------------------------------');
+    logging.log('------------------------------------------');
+    logging.log('Logging and Configuration');
+    logging.log('------------------------------------------');
     application.use(loggingHandler);
     application.use(corsHandler);
 
-    logging.info('------------------------------');
-    logging.info('Setup Routes and Controllers');
-    logging.info('------------------------------');
+    logging.log('------------------------------------------');
+    logging.log('Setup Routes and Controllers');
+    logging.log('------------------------------------------');
     setupRoutes(application); // setupRoutes(controllers, application, routes);
 
-    logging.info('------------------------------');
-    logging.info('Starting HTTP Server');
-    logging.info('------------------------------');
+    logging.log('------------------------------------------');
+    logging.log('Starting HTTP Server');
+    logging.log('------------------------------------------');
     httpServer = http.createServer(application);
     httpServer.listen(process.env.SERVER_PORT, () => {
-        logging.info('------------------------------');
-        logging.info(
+        logging.log('------------------------------------------');
+        logging.log(
             `Server is running at http://${
                 process.env.SERVER_HOSTNAME || 'localhost'
             }:${process.env.SERVER_PORT || 3000}`
         );
-        logging.info('------------------------------');
+        logging.log('------------------------------------------');
     });
 };
 
@@ -51,7 +71,7 @@ export const Shutdown = (callback: any) =>
             logging.error('Error shutting down server:', err);
             return callback(err);
         }
-        logging.info('Server shut down gracefully');
+        logging.log('Server shut down gracefully');
         callback();
     });
 
