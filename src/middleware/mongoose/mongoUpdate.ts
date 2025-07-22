@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Model } from 'mongoose';
+import { TEST } from '../../config/config';
 
 export function MongoUpdate(model: Model<any>) {
     return async function (req: Request, res: Response, next: NextFunction) {
@@ -13,7 +14,7 @@ export function MongoUpdate(model: Model<any>) {
             req.mongoUpdate = document;
             req.declaredMethod = 'mongoUpdate';
         } catch (error) {
-            logging.error('Error in MongoUpdate:', error);
+            !TEST && logging.error('Error in MongoUpdate:', error);
             return res.status(500).json(error);
         }
         next();

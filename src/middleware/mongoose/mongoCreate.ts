@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose, { Model } from 'mongoose';
+import { TEST } from '../../config/config';
 
 export function MongoCreate(model: Model<any>) {
     return async function (req: Request, res: Response, next: NextFunction) {
@@ -12,7 +13,7 @@ export function MongoCreate(model: Model<any>) {
             req.mongoCreate = document;
             req.declaredMethod = 'mongoCreate';
         } catch (error) {
-            logging.error('Error in MongoCreate:', error);
+            !TEST && logging.error('Error in MongoCreate:', error);
             return res.status(500).json(error);
         }
         next();

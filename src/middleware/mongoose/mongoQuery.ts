@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Model } from 'mongoose';
+import { TEST } from '../../config/config';
 
 export function MongoQuery(model: Model<any>) {
     return async function (req: Request, res: Response, next: NextFunction) {
@@ -11,7 +12,7 @@ export function MongoQuery(model: Model<any>) {
             req.mongoQuery = documents;
             req.declaredMethod = 'mongoQuery';
         } catch (error) {
-            logging.error('Error in MongoQuery:', error);
+            !TEST && logging.error('Error in MongoQuery:', error);
             return res.status(500).json(error);
         }
         next();
