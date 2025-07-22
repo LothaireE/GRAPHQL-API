@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, signup } from '../controller/auth.controller';
+import AuthController from '../controller/auth.controller';
 import { loginSchema } from '../schema/loginSchema';
 import { signupSchema } from '../schema/signupSchema';
 import { validate } from '../middleware/validate';
@@ -10,7 +10,7 @@ import { validate } from '../middleware/validate';
 const authRouter = Router();
 
 // POST
-authRouter.post('/auth/login', validate(loginSchema), login);
-authRouter.post('/auth/signup', validate(signupSchema), signup);
+authRouter.post('/auth/login', validate(loginSchema), AuthController.login);
+authRouter.post('/auth/signup', validate(signupSchema), AuthController.signup);
 
 export default authRouter;

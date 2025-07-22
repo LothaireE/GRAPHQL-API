@@ -1,12 +1,12 @@
 import http from 'http';
 import express from 'express';
 import mongoose from 'mongoose';
+import { mongo, server } from './config/config';
 import './config/logging';
-
 import { loggingHandler } from './middleware/loggingHandler';
 import { corsHandler } from './middleware/corsHandler';
+import { declareHandler } from './middleware/declareHandler';
 import setupRoutes from './routes/routes';
-import { mongo, server } from './config/config';
 
 export const application = express();
 
@@ -43,6 +43,7 @@ export const Main = async () => {
     logging.log('------------------------------------------');
     application.use(loggingHandler);
     application.use(corsHandler);
+    application.use(declareHandler); // middleware used to declare handlers for specific routes or functionalities(e.g., MongoDB operations in this case)
 
     logging.log('------------------------------------------');
     logging.log('Setup Routes and Controllers');
@@ -56,7 +57,9 @@ export const Main = async () => {
     httpServer.listen(process.env.SERVER_PORT, () => {
         logging.log('------------------------------------------');
         logging.log(
-            `Server is running at http://${server.SERVER_HOSTNAME}:${server.SERVER_PORT}`
+            `Server is running at http://${
+                server.SERVER_HOSTNAME || 'localhost'
+            }:${server.SERVER_PORT}`
         );
         logging.log('------------------------------------------');
     });
