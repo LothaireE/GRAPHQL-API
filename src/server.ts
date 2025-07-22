@@ -6,7 +6,7 @@ import './config/logging';
 import { loggingHandler } from './middleware/loggingHandler';
 import { corsHandler } from './middleware/corsHandler';
 import setupRoutes from './routes/routes';
-import { mongo } from './config/config';
+import { mongo, server } from './config/config';
 
 export const application = express();
 
@@ -56,9 +56,7 @@ export const Main = async () => {
     httpServer.listen(process.env.SERVER_PORT, () => {
         logging.log('------------------------------------------');
         logging.log(
-            `Server is running at http://${
-                process.env.SERVER_HOSTNAME || 'localhost'
-            }:${process.env.SERVER_PORT || 3000}`
+            `Server is running at http://${server.SERVER_HOSTNAME}:${server.SERVER_PORT}`
         );
         logging.log('------------------------------------------');
     });
