@@ -1,9 +1,10 @@
+import { Shutdown } from '../../src/server';
+import application from '../../src/application';
 import request from 'supertest';
-import { application, Shutdown } from '../../src/server';
 
-describe('Server Integration Tests', () => {
+describe('Application', () => {
     afterAll((done) => {
-        Shutdown(done); // Shutdown the server after tests
+        Shutdown(done);
     });
 
     it('should start with the proper environment', async () => {
@@ -15,15 +16,23 @@ describe('Server Integration Tests', () => {
         const res = await request(application).get('/api/main/healthcheck');
         expect(res.statusCode).toBe(200);
         expect(res.body.message).toBe('API is running');
-    });
+    }, 10000);
 
-    it('returns all the options allowed to be called by customer (http methods)', async () => {
+    it('main/healthcheck/details performs correctly and API runs smoothly', async () => {
+        const res = await request(application).get(
+            '/api/main/healthcheck/details'
+        );
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe('API is running with details');
+    }, 10000);
+
+    it('Returns all options allowed when called from the HTTP method options', async () => {
         const response = await request(application).options('/');
         expect(response.status).toBe(200);
         expect(response.headers['access-control-allow-methods']).toBe(
             'POST, GET, PUT, DELETE, PATCH'
         );
-    });
+    }, 10000);
 
     it('catches all requests that do not match any defined routes', async () => {
         const response = await request(application).get('/non-existent-route');

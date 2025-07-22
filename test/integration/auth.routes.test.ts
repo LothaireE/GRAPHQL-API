@@ -1,5 +1,6 @@
 import request from 'supertest';
-import { application, Shutdown } from '../../src/server';
+import { Shutdown } from '../../src/server';
+import application from '../../src/application';
 
 describe('Auth Routes Integration Tests', () => {
     afterAll((done) => {
@@ -55,7 +56,7 @@ describe('Auth Routes Integration Tests', () => {
             .post('/api/auth/login')
             .send({ email: 'test@mail.com', password: '123456' });
         expect(res.statusCode).toBe(200);
-        expect(res.body.message).toBe('Logged in successfully');
+        expect(res.body.message).toBe('User logged in successfully');
     });
 
     it('POST /api/auth/login fails with invalid credentials', async () => {
