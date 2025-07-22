@@ -3,12 +3,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { mongo, server } from './config/config';
 import './config/logging';
-import { loggingHandler } from './middleware/loggingHandler';
-import { corsHandler } from './middleware/corsHandler';
-import { declareHandler } from './middleware/declareHandler';
-import setupRoutes from './routes/routes';
 
-export const application = express();
+import application from './application';
 
 export let httpServer: ReturnType<typeof http.createServer>;
 
@@ -18,8 +14,6 @@ export const Main = async () => {
         `Initializing API in ${process.env.NODE_ENV?.toUpperCase()} mode`
     );
     logging.log('------------------------------------------');
-    application.use(express.urlencoded({ extended: true }));
-    application.use(express.json());
     logging.log('------------------------------------------');
     logging.log('Initializing connection to Mongo');
     logging.log('------------------------------------------');
@@ -39,27 +33,13 @@ export const Main = async () => {
     }
 
     logging.log('------------------------------------------');
-    logging.log('Logging and Configuration');
-    logging.log('------------------------------------------');
-    application.use(loggingHandler);
-    application.use(corsHandler);
-    application.use(declareHandler); // middleware used to declare handlers for specific routes or functionalities(e.g., MongoDB operations in this case)
-
-    logging.log('------------------------------------------');
-    logging.log('Setup Routes and Controllers');
-    logging.log('------------------------------------------');
-    setupRoutes(application); // setupRoutes(controllers, application, routes);
-
-    logging.log('------------------------------------------');
     logging.log('Starting HTTP Server');
     logging.log('------------------------------------------');
     httpServer = http.createServer(application);
-    httpServer.listen(process.env.SERVER_PORT, () => {
+    httpServer.listen(server.SERVER_PORT, () => {
         logging.log('------------------------------------------');
         logging.log(
-            `Server is running at http://${
-                server.SERVER_HOSTNAME || 'localhost'
-            }:${server.SERVER_PORT}`
+            `Server is running at http://${server.SERVER_HOSTNAME}:${server.SERVER_PORT}`
         );
         logging.log('------------------------------------------');
     });
@@ -76,4 +56,6 @@ export const Shutdown = (callback: any) =>
         callback();
     });
 
+// if (process.env.NODE_ENV !== 'test') {
 Main();
+// }
