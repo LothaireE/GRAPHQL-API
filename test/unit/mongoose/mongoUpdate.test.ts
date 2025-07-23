@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { MongoUpdate } from '../../../src/middleware/mongoose/mongoUpdate';
 

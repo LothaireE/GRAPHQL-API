@@ -1,5 +1,5 @@
 import { MongoDelete } from '../../../src/middleware/mongoose/mongoDelete';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 describe('MongoDelete middleware', () => {
     it('should delete a document and call next()', async () => {

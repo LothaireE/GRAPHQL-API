@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { MongoGet } from '../../../src/middleware/mongoose/mongoGet';
 import { MongoGetAll } from '../../../src/middleware/mongoose/mongoGetAll';
 

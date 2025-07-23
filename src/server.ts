@@ -6,11 +6,11 @@ import application from './application';
 
 export let httpServer: ReturnType<typeof http.createServer>;
 
+const nodeEnv: string = process.env.NODE_ENV?.toUpperCase() || '';
+
 export const Main = async () => {
     logging.log('------------------------------------------');
-    logging.log(
-        `Initializing API in ${process.env.NODE_ENV?.toUpperCase()} mode`
-    );
+    logging.log(`Initializing API in ${nodeEnv} mode`);
     logging.log('------------------------------------------');
     logging.log('------------------------------------------');
     logging.log('Initializing connection to Mongo');

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { MongoCreate } from '../../../src/middleware/mongoose/mongoCreate';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 describe('MongoCreate middleware', () => {
     it('should create and save a document, then call next()', async () => {
