@@ -1,23 +1,62 @@
 import { Request, Response } from 'express';
+import UserModel from '../models/user.model';
+import bcrypt from 'bcrypt';
 
 class AuthController {
-    static login(req: Request, res: Response) {
-        const { name } = req.body;
-        logging.info(`User ${name} logged in successfully`);
+    static async login(req: Request, res: Response) {
+        const { email, password } = req.body;
 
+        const user = await UserModel.findOne(email);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        logging.info(`User ${user.name} logged in successfully`);
+        const allUsers = UserModel.findAll();
+        logging.info('All users:', allUsers);
         return res.status(200).json({
             message: 'User logged in successfully',
+            data: {
+                // id: user._id,
+                email: user.email
+            },
             timestamp: new Date().toISOString()
         });
     }
 
-    static signup(req: Request, res: Response) {
-        // // logic to implement here
-        const { name } = req.body;
-        logging.info(`User ${name} signed up successfully`);
+    static async signup(req: Request, res: Response) {
+        const { name, email, password } = req.body;
 
+        const existing = await UserModel.findOne(email);
+        if (existing) {
+            return res.status(409).json({ error: 'Email already registered' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await UserModel.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        logging.info(`User ${newUser.name} signed up successfully`);
+        const allUsers = UserModel.findAll();
+        logging.info('All users:', allUsers);
         return res.status(201).json({
             message: 'User signed up successfully',
+            user: {
+                // id: newUser._id,
+                email: newUser.email,
+                name: newUser.name
+            },
             timestamp: new Date().toISOString()
         });
     }

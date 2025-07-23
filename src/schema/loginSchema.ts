@@ -8,8 +8,13 @@
  * Throws an error with a `details` property containing validation messages if validation fails.
  */
 
+type loginData = {
+    email: string;
+    password: string;
+};
+
 export const loginSchema = {
-    async validateAsync(data: any) {
+    async validateAsync(data: loginData) {
         const errors: string[] = [];
 
         if (

@@ -10,7 +10,8 @@ export function validate(schema: any) {
     return async function (req: Request, res: Response, next: NextFunction) {
         try {
             const validated = await schema.validateAsync(req.body);
-            req.body = validated; // Replace req.body with the validated data
+            validated.email = validated.email.toLowerCase();
+            req.body = validated;
         } catch (error) {
             logging.error('Validation error:', error);
             return res.status(400).json(error);
