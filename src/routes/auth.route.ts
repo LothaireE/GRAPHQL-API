@@ -3,8 +3,9 @@ import AuthController from '../controller/auth.controller';
 import { loginSchema } from '../schema/loginSchema';
 import { signupSchema } from '../schema/signupSchema';
 import { validate } from '../middleware/validate';
-// This file sets up the authentication routes for the application.
-// It imports the necessary controllers and schemas, and uses the validate middleware to ensure that incoming requests meet the validation criteria.
+
+//Sets up authentication routes for the application with necessary controllers and schemas
+// Minimal validate middleware to ensure that incoming requests meet the validation criteria.
 
 // Create a new router instance
 const authRouter = Router();

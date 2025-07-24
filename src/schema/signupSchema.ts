@@ -63,7 +63,6 @@ export const signupSchema = {
             email: data.email.trim(),
             password: data.password
         };
-        console.log('Valid signup data dans signup schema :', validData);
         return validData;
     }
 };

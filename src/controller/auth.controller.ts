@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config/config';
 
 class AuthController {
     static async login(req: Request, res: Response) {
@@ -18,14 +20,16 @@ class AuthController {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        logging.info(`User ${user.name} logged in successfully`);
-        const allUsers = UserModel.findAll();
-        logging.info('All users:', allUsers);
+        const accessToken = jwt.sign(email, JWT_SECRET);
+        // no expiration for now, but should be set later in production
+        // const accessToken = jwt.sign(email, JWT_SECRET, {expiresIn: '12h'});
+
         return res.status(200).json({
             message: 'User logged in successfully',
             data: {
                 // id: user._id,
-                email: user.email
+                email: user.email,
+                accessToken
             },
             timestamp: new Date().toISOString()
         });
@@ -49,7 +53,7 @@ class AuthController {
 
         logging.info(`User ${newUser.name} signed up successfully`);
         const allUsers = UserModel.findAll();
-        logging.info('All users:', allUsers);
+
         return res.status(201).json({
             message: 'User signed up successfully',
             user: {

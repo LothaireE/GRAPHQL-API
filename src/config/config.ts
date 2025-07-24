@@ -7,6 +7,9 @@ export const DEVELOPMENT = process.env.NODE_ENV === 'development';
 export const PRODUCTION = process.env.NODE_ENV === 'production';
 export const TEST = process.env.NODE_ENV === 'test';
 
+export const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret';
+export const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '1h';
+
 export const MONGO_USER = process.env.MONGO_USER || '';
 export const MONGO_PASSWORD = process.env.MONGO_PASSWORD || '';
 export const MONGO_URL = process.env.MONGO_URL || '';

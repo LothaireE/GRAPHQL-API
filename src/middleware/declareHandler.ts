@@ -10,6 +10,7 @@ declare global {
             mongoUpdate: Document | undefined;
             mongoQuery: Document[];
             declaredMethod?: string; // Optional property to track the declared method
+            authorizedUser?: string | undefined; // Optional property to hold the authorized user information
         }
     }
 }
@@ -27,7 +28,8 @@ export function declareHandler(
     req.mongoCreate = undefined;
     req.mongoUpdate = undefined;
     req.mongoQuery = [];
-    req.declaredMethod = undefined; // Assuming you want to keep track of the declared method
+    req.declaredMethod = undefined;
+    req.authorizedUser = undefined;
 
     next();
 }
