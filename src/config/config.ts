@@ -43,6 +43,7 @@ export const server = {
 };
 
 // Auth Server Configuration
+export const AUTH_SERVER_LABEL = 'AUTH SERVER';
 export const AUTH_SERVER_PORT = process.env.AUTH_SERVER_PORT
     ? Number(process.env.AUTH_SERVER_PORT)
     : 4000;
