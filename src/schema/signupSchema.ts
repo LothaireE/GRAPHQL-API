@@ -8,8 +8,15 @@
  * Throws an error with a `details` property containing validation messages if validation fails.
  */
 
+type signupData = {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
+
 export const signupSchema = {
-    async validateAsync(data: any) {
+    async validateAsync(data: signupData) {
         const errors: string[] = [];
 
         if (
@@ -56,7 +63,6 @@ export const signupSchema = {
             email: data.email.trim(),
             password: data.password
         };
-
         return validData;
     }
 };

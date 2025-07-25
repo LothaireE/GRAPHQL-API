@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { Shutdown } from '../../src/server';
-import application from '../../src/application';
+import { Shutdown } from '../../src/authServer';
+import authApplication from '../../src/authApplication';
 
 describe('Auth Routes Integration Tests', () => {
     afterAll((done) => {
@@ -9,34 +9,37 @@ describe('Auth Routes Integration Tests', () => {
 
     it('should start with the proper environment', async () => {
         expect(process.env.NODE_ENV).toBe('test');
-        expect(application).toBeDefined();
+        expect(authApplication).toBeDefined();
     }, 10000);
 
     it('POST /api/auth/signup creates a new user', async () => {
-        const res = await request(application).post('/api/auth/signup').send({
-            name: 'jimi',
-            email: 'test@mail.com',
-            password: '123456', // min length of 6
-            confirmPassword: '123456'
-        });
-
+        const res = await request(authApplication)
+            .post('/api/auth/signup')
+            .send({
+                name: 'jimi',
+                email: 'test@mail.com',
+                password: '123456', // min length of 6
+                confirmPassword: '123456'
+            });
         expect(res.statusCode).toBe(201);
         expect(res.body.message).toBe('User signed up successfully');
     });
 
     it('POST /api/auth/signup fails with name too short', async () => {
-        const res = await request(application).post('/api/auth/signup').send({
-            name: 'j',
-            email: 'test@mail.com',
-            password: '123456',
-            confirmPassword: '123456'
-        });
+        const res = await request(authApplication)
+            .post('/api/auth/signup')
+            .send({
+                name: 'j',
+                email: 'test@mail.com',
+                password: '123456',
+                confirmPassword: '123456'
+            });
         expect(res.statusCode).toBe(400);
         expect(res.body.details[0]).toBe('Invalid or missing name.');
     });
 
     it('POST /api/auth/signup fails with invalid email', async () => {
-        const res = await request(application)
+        const res = await request(authApplication)
             .post('/api/auth/signup')
             .send({ name: 'jimi', email: 'test#mail.com', password: '123456' });
         expect(res.statusCode).toBe(400);
@@ -44,7 +47,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     it('POST /api/auth/signup fails with invalid credentials', async () => {
-        const res = await request(application)
+        const res = await request(authApplication)
             .post('/api/auth/signup')
             .send({ name: 'jimi', email: 'test@mail.com', password: '12345' });
         expect(res.statusCode).toBe(400);
@@ -52,7 +55,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     it('POST /api/auth/login logs in an existing user', async () => {
-        const res = await request(application)
+        const res = await request(authApplication)
             .post('/api/auth/login')
             .send({ email: 'test@mail.com', password: '123456' });
         expect(res.statusCode).toBe(200);
@@ -60,7 +63,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     it('POST /api/auth/login fails with invalid credentials', async () => {
-        const res = await request(application)
+        const res = await request(authApplication)
             .post('/api/auth/login')
             .send({ email: 'test@mail.com', password: '12345' });
         expect(res.statusCode).toBe(400);
@@ -68,7 +71,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     it('POST /api/auth/login fails with invalid email', async () => {
-        const res = await request(application)
+        const res = await request(authApplication)
             .post('/api/auth/login')
             .send({ email: 'test#mail.com', password: '123456' });
         expect(res.statusCode).toBe(400);
