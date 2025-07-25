@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../../config/config';
+import { AuthorizedUser } from '../../types/user';
 
 export function verifyAccessToken(schema: any = null) {
     return async function (req: Request, res: Response, next: NextFunction) {
@@ -12,10 +13,16 @@ export function verifyAccessToken(schema: any = null) {
                 .json({ error: 'Authorization header is missing' });
 
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-            if (err) return res.status(403).json({ error: 'Invalid token' });
-            req.authorizedUser = user;
-        });
-        next();
+
+        try {
+            const verifiedUser = jwt.verify(
+                token,
+                JWT_SECRET
+            ) as AuthorizedUser;
+            req.authorizedUser = verifiedUser;
+            next();
+        } catch (error) {
+            res.status(403).json({ error: 'Invalid token' });
+        }
     };
 }

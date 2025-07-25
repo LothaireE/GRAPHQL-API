@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Document } from 'mongoose';
+import { AuthorizedUser } from '../types/user';
 
 declare global {
     namespace Express {
@@ -9,8 +10,8 @@ declare global {
             mongoCreate: Document | undefined;
             mongoUpdate: Document | undefined;
             mongoQuery: Document[];
-            declaredMethod?: string; // Optional property to track the declared method
-            authorizedUser?: string | undefined; // Optional property to hold the authorized user information
+            declaredMethod?: string;
+            authorizedUser: AuthorizedUser | undefined;
         }
     }
 }

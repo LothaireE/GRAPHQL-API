@@ -8,3 +8,10 @@ export type UserType = {
     email: string;
     password: string;
 };
+
+export type AuthorizedUser = {
+    email: string;
+    source: string;
+    iat: number;
+    exp: number;
+};
