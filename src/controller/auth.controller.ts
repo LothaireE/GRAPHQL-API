@@ -6,6 +6,7 @@ import {
     generateRefreshToken,
     verifyRefreshToken
 } from '../utils/handleToken';
+import { AUTH_SERVER_LABEL } from '../config/config';
 
 let refreshTokens: string[] = []; // To be stored in a database or cache at some point
 
@@ -29,7 +30,10 @@ class AuthController {
 
         const refreshToken = generateRefreshToken(email);
         refreshTokens.push(refreshToken);
-
+        logging.info(
+            `User ${user.name} signed up successfully`,
+            AUTH_SERVER_LABEL
+        );
         return res.status(200).json({
             message: 'User logged in successfully',
             data: {
@@ -57,7 +61,10 @@ class AuthController {
             password: hashedPassword
         });
 
-        logging.info(`User ${newUser.name} signed up successfully`);
+        logging.info(
+            `User ${newUser.name} signed up successfully`,
+            AUTH_SERVER_LABEL
+        );
 
         return res.status(201).json({
             message: 'User signed up successfully',
@@ -86,6 +93,10 @@ class AuthController {
                 'refresh'
             );
 
+            logging.info(
+                'Access token refreshed successfully',
+                AUTH_SERVER_LABEL
+            );
             return res.status(201).json({
                 message: 'Access token refreshed successfully',
                 data: {
@@ -101,7 +112,7 @@ class AuthController {
         refreshTokens = refreshTokens.filter(
             (token) => token !== req.body.token
         );
-        logging.info('User logged out successfully');
+        logging.info('User logged out successfully', AUTH_SERVER_LABEL);
         return res.status(204);
     }
 }
