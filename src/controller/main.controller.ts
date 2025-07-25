@@ -7,9 +7,15 @@ class HealthController {
             timestamp: new Date().toISOString()
         });
     }
+
     static healthCheckWithDetails(req: Request, res: Response) {
+        if (!req.authorizedUser) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const { email } = req.authorizedUser;
+
         return res.status(200).json({
-            message: 'API is running with details',
+            message: `Detailed health performed for user: ${email}`,
             details: {
                 uptime: process.uptime(),
                 memoryUsage: process.memoryUsage(),

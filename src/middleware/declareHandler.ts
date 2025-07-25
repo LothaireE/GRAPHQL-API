@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Document } from 'mongoose';
+import { AuthorizedUser } from '../types/user';
 
 declare global {
     namespace Express {
@@ -9,7 +10,8 @@ declare global {
             mongoCreate: Document | undefined;
             mongoUpdate: Document | undefined;
             mongoQuery: Document[];
-            declaredMethod?: string; // Optional property to track the declared method
+            declaredMethod?: string;
+            authorizedUser: AuthorizedUser | undefined;
         }
     }
 }
@@ -27,7 +29,8 @@ export function declareHandler(
     req.mongoCreate = undefined;
     req.mongoUpdate = undefined;
     req.mongoQuery = [];
-    req.declaredMethod = undefined; // Assuming you want to keep track of the declared method
+    req.declaredMethod = undefined;
+    req.authorizedUser = undefined;
 
     next();
 }

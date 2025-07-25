@@ -1,17 +1,22 @@
-// import { Express, RequestHandler } from 'express';
 import { Express } from 'express';
 import healthCheckRoutes from './main.route';
 import authRoutes from './auth.route';
 import bookRoutes from './book.route';
 import { routeNotFound } from '../middleware/routeNotFound';
 
-// type RouteHandler = Map<keyof Express, Map<string, RequestHandler[]>>;
+// // Single server way
+// export default function setupRoutes(application: Express) {
+//     application.use('/api', [healthCheckRoutes, authRoutes, bookRoutes]);
+//     application.use(routeNotFound);
+// }
 
-export default function setupRoutes(
-    // controllers: any,
-    application: Express
-    // routes: RouteHandler
-) {
-    application.use('/api', [healthCheckRoutes, authRoutes, bookRoutes]);
-    application.use(routeNotFound); // Catch-all route for undefined routes, must be last.
+// Dual server way
+export default function setupRoutes(application: Express) {
+    application.use('/api', [healthCheckRoutes, bookRoutes]);
+    application.use(routeNotFound);
+}
+
+export function setupAuthRoutes(application: Express) {
+    application.use('/api', [authRoutes]);
+    application.use(routeNotFound);
 }

@@ -9,11 +9,17 @@ import { MongoUpdate } from '../middleware/mongoose/mongoUpdate';
 import { MongoDelete } from '../middleware/mongoose/mongoDelete';
 import { MongoQuery } from '../middleware/mongoose/mongoQuery';
 
+// authentication middleware
+// import { verifyAccessToken } from '../middleware/authentication/verifyAccessToken';
+
 // model
 import { Book } from '../models/book.model';
 
 // Create a new router instance
 const bookRouter = Router();
+
+// uncomment if I ever need to make this router authorized only
+// bookRouter.use(verifyAccessToken());
 
 // get
 bookRouter.get('/books/get/all', MongoGetAll(Book), BookController.getAll);
@@ -32,9 +38,5 @@ bookRouter.delete(
     MongoDelete(Book),
     BookController.delete
 );
-// bookRouter.delete(
-//     '/books/delete/all',
-//     MongoGetAll(Book),
-//     BookController.deleteAll
-// );
+
 export default bookRouter;
