@@ -2,32 +2,32 @@
 
 A basic RESTful API built with **Node.js**, **Express**, and **TypeScript**.
 
+![JWT Auth Enabled](https://img.shields.io/badge/auth-JWT-green)
+
 ## Basic routes setup :
 
--   **Main routes**: only here to perform a quick healthcheck. Copy and use them
-    as a starting point.
-
--   **Auth routes**: Handcrafted minimal validation logic. Replace this with a
-    proper validation library of your choice (zod, joi, etc).
-
--   **Book routes**: serve as an example of standard CRUD operations backed by
-    MongoDB using the generic middlewares. Can be used as a template to define
-    other resource routes in a modular way.
-
-The example is specific to books here but this architectural pattern can be
-applied to any resource (authors, users, super heroes or even dare I say...
-Pokemen).
+-   **Main routes**: Only here to perform a quick healthcheck. Route
+    'healthcheck/details' is protected fro demonstration purpose and requires an
+    access token.Copy and use them as a starting point.
+-   **Auth routes**: Exposed through a separate authentication server
+    (`authServer.ts`). Includes login/signup logic, validation(minimal
+    middleware, improve it with a library of your choice, e.g. zod, joi, etc),
+    password hashing, and JWT-based authentication with access and refresh
+    tokens.
+-   **Book routes**: Serve as an example of standard CRUD operations backed by
+    MongoDB using generic middlewares. Can be used as a template to define other
+    resource routes in a modular way.
 
 ## Features
 
 -   Modular project structure using TypeScript
 -   Custom logging middleware
 -   `.env` file support for configuration
--   Development workflow with `nodemon` / `ts-node-dev`
--   Build scripts using the TypeScript compiler
+-   Separation between main API and authentication logic
+-   JWT-based authentication (access & refresh tokens)
+-   Secure password hashing with bcrypt
 -   Test coverage reports using Jest
-
----
+-   Development workflow with `nodemon` / `ts-node-dev`
 
 ## Installation
 
@@ -40,105 +40,80 @@ npm install -g nodemon ts-node typescript
 
 ## Usage
 
-Start the development server:
+### Launch servers in development:
+
+Start the **main application** (API with resources):
 
 ```bash
 npm run dev
 ```
 
-or
+Start the **auth application** (login/signup/token endpoints):
 
 ```bash
-nodemon src/server.ts
+npm run devAuth
 ```
 
-Build the project for production:
+Or both using concurrently library:
+
+```bash
+npm run dev:all
+```
+
+### Build and run in production:
 
 ```bash
 npm run build
-```
-
-Start the production server:
-
-```bash
 npm start
 ```
 
 ## Test Coverage Report
 
-After running the tests with coverage:
-
 ```bash
 npm run test
 ```
 
-A detailed HTML coverage report is generated in:
+View the report:
 
-```bash
- ~/BASE-API/coverage/lcov-report/index.html
-```
-
-To view it:
-
-Copy the path of it, open your browser and paste it directly into the search
-bar:
-
-    file:///absolute/path/to/BASE-API/coverage/lcov-report/index.html
-
-You will see a visual, navigable coverage report for your codebase.
+`/coverage/lcov-report/index.html`
 
 ## Environment Variables
 
-Duplicate `.env.example` file in the root directory, rename it `.env` and add
-your own variables to it following example below:
+Copy `.env.example` to `.env` and configure:
 
 ```env
 SERVER_PORT=3000
-SERVER_HOSTNAME="localhost"
-and so on
+SERVER_HOSTNAME=localhost
+AUTH_PORT=4000
+JWT_SECRET=your_secret
+REFRESH_TOKEN_SECRET=your_refresh_secret
 ```
 
-## Mongoose & access Middlewares
+## Mongoose & Access Middlewares
 
-This API uses [Mongoose] to interact with MongoDB (NoSQL database),  
-but thanks to abstraction via middlewares, it can be easily replaced by any
-other data service.
+The API uses Mongoose, but due to abstraction via middlewares, it can easily be
+replaced by any other data service.. You can easily replace Mongo with any other
+store.
 
-To simplify CRUD operations, a series of **generic middlewares** has been
-implemented. This allows database access to be factored and standardized.
+| Middleware         | Description                          |
+| ------------------ | ------------------------------------ |
+| MongoCreate(model) | Create from `req.body`               |
+| MongoGet(model)    | Get one by `req.params.id`           |
+| MongoGetAll(model) | Get all                              |
+| MongoUpdate(model) | Update with `req.body`               |
+| MongoDelete(model) | Delete by `req.params.id`            |
+| MongoQuery(model)  | Query by custom fields in `req.body` |
 
-### Generic Middlewares available
+## JWT Authentication
 
-| Middleware           | Description                              |
-| -------------------- | ---------------------------------------- |
-| `MongoCreate(model)` | Create a document from `req.body`        |
-| `MongoGet(model)`    | Retrieve a document from `req.params.id` |
-| `MongoGetAll(model)` | Retrieve all documents                   |
-| `MongoUpdate(model)` | Update a document from `req.body`        |
-| `MongoDelete(model)` | Remove a document from `req.params.id`   |
-| `MongoQuery(model)`  | Execute a request based on `req.body`    |
+Auth is handled via a dedicated server. Users get access & refresh tokens.  
+Access to protected routes requires a valid access token.
 
----
+![JWT Auth Flow](./jwt_auth_flow.png)
 
-Abstracting database operations (CRUD) into dedicated middlewares ensures:
+## Controllers
 
--   **Separation of concerns** between routing, application logic and data
-    access
--   **Code reuse** across different endpoints and models
--   **Simplified unit testing**
--   **Loose coupling to Mongoose** allowing greater modularity
-
-This makes the system **modular**, **maintainable**, **extensible** and route
-controllers remain unchanged.
-
-### Controllers
-
-Each route delegates the actual request handling to a **Controller class**,
-where the application logic resides. Using class-based controllers (with static
-methods) helps organize all the logic for a given resource in one place.
-
-For example, healthcheck endpoints are implemented inside a `HealthController`
-class:
+Logic is grouped into controller classes, e.g.:
 
 ```ts
 class HealthController {
