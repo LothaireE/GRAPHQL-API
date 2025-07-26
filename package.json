@@ -1,7 +1,7 @@
 {
-    "name": "base-api",
+    "name": "graphql-base-api",
     "version": "1.0.0",
-    "description": "A basic api in Node JS with Typescript.",
+    "description": "A api in Node JS with Typescript.",
     "main": "src/server.ts",
     "scripts": {
         "test": "NODE_ENV=test jest --config jest.config.ts --coverage",
