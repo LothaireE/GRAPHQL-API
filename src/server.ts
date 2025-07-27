@@ -1,43 +1,35 @@
 import http from 'http';
-import mongoose from 'mongoose';
-import { mongo, server, TEST } from './config/config';
+import { server, TEST } from './config/config';
 import './config/logging';
 import application from './application';
 
-export let httpServer: ReturnType<typeof http.createServer>;
+// graphQL
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@as-integrations/express5';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import resolvers from './graphql/resolvers/index';
+import typeDefs from './graphql/typeDefs/bookTypeDefs';
+
+export let httpServer: ReturnType<typeof http.createServer>; // = http.createServer(application);
+
+httpServer = http.createServer(application);
+
+let apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+});
 
 const nodeEnv: string = process.env.NODE_ENV?.toUpperCase() || '';
 
 export const Main = async () => {
     logging.log('------------------------------------------');
-    logging.log(`Initializing API in ${nodeEnv} mode`);
+    logging.log(`Initializing Node Graphql API in ${nodeEnv} mode`);
     logging.log('------------------------------------------');
-    logging.log('------------------------------------------');
-    logging.log('Initializing connection to Mongo');
-    logging.log('------------------------------------------');
-    if (!TEST) {
-        try {
-            const connection = await mongoose.connect(
-                mongo.MONGO_CONNECTION,
-                mongo.MONGO_OPTION
-            );
-            logging.log('------------------------------------------');
-            logging.log(
-                `Connected to Mongo using version: ${connection.version}`
-            );
-            logging.log('------------------------------------------');
-        } catch (error) {
-            logging.log('------------------------------------------');
-            logging.info('Unable to connect to Mongo');
-            logging.error(error);
-            logging.log('------------------------------------------');
-        }
-    }
 
-    logging.log('------------------------------------------');
-    logging.log('Starting HTTP Server');
-    logging.log('------------------------------------------');
-    httpServer = http.createServer(application);
+    await apolloServer.start();
+    application.use(expressMiddleware(apolloServer));
+
     httpServer.listen(server.SERVER_PORT, () => {
         logging.log('------------------------------------------');
         logging.log(

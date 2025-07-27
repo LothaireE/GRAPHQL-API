@@ -1,6 +1,5 @@
 import http from 'http';
-import mongoose from 'mongoose';
-import { mongo, authServer, TEST, AUTH_SERVER_LABEL } from './config/config';
+import { authServer, TEST, AUTH_SERVER_LABEL } from './config/config';
 import './config/logging';
 import authApplication from './authApplication';
 

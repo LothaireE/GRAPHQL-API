@@ -1,7 +1,6 @@
 import { Express } from 'express';
 import healthCheckRoutes from './main.route';
 import authRoutes from './auth.route';
-import bookRoutes from './book.route';
 import { routeNotFound } from '../middleware/routeNotFound';
 
 // // Single server way
@@ -12,7 +11,7 @@ import { routeNotFound } from '../middleware/routeNotFound';
 
 // Dual server way
 export default function setupRoutes(application: Express) {
-    application.use('/api', [healthCheckRoutes, bookRoutes]);
+    application.use('/api', [healthCheckRoutes]);
     application.use(routeNotFound);
 }
 

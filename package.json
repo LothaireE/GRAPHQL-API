@@ -15,15 +15,19 @@
     "author": "Lothaire",
     "license": "",
     "dependencies": {
+        "@apollo/server": "^5.0.0",
+        "@as-integrations/express5": "^1.1.2",
         "bcrypt": "^6.0.0",
         "dotenv": "^17.2.0",
         "express": "^5.1.0",
-        "jsonwebtoken": "^9.0.2",
-        "mongodb": "^6.17.0",
-        "mongoose": "^8.16.4"
+        "graphql": "^16.11.0",
+        "graphql-http": "^1.22.4",
+        "graphql-tools": "^9.0.20",
+        "jsonwebtoken": "^9.0.2"
     },
     "devDependencies": {
         "@types/bcrypt": "^6.0.0",
+        "@types/cors": "^2.8.19",
         "@types/express": "^5.0.3",
         "@types/jest": "^30.0.0",
         "@types/jsonwebtoken": "^9.0.10",

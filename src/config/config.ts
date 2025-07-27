@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -13,23 +12,6 @@ export const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '1h';
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || ''; // 'default_refresh_token';
 
 // MongoDB Configuration
-export const MONGO_USER = process.env.MONGO_USER || '';
-export const MONGO_PASSWORD = process.env.MONGO_PASSWORD || '';
-export const MONGO_URL = process.env.MONGO_URL || '';
-export const MONGO_DATABASE = process.env.MONGO_DATABASE || '';
-export const MONGO_OPTION: mongoose.ConnectOptions = {
-    retryWrites: true,
-    w: 'majority'
-};
-
-export const mongo = {
-    MONGO_USER,
-    MONGO_PASSWORD,
-    MONGO_URL,
-    MONGO_DATABASE,
-    MONGO_OPTION,
-    MONGO_CONNECTION: `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_URL}/${MONGO_DATABASE}`
-};
 
 // Server Configuration
 export const SERVER_PORT = process.env.SERVER_PORT
