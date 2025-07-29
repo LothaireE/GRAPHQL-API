@@ -1,9 +1,9 @@
 import Authors from '../../data/Authors';
 import Books from '../../data/Books';
+import { QueryResolvers } from '../generated/types.generated';
+let helloMessage: String = 'World !';
 
-let helloMessage: String = 'World depuis le resolver distant!';
-
-const queryResolvers = {
+export const queryResolvers = <QueryResolvers>{
     Query: {
         hello: () => helloMessage,
         books: () => Books,
@@ -14,5 +14,3 @@ const queryResolvers = {
             Authors.find((author) => String(author.id) === args.id)
     }
 };
-
-export default queryResolvers;

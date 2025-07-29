@@ -1,0 +1,7 @@
+type Query {
+    hello: String
+    authors: [Author]
+    books: [Book]
+    book(id: ID!): Book
+    author(id: ID!): Author
+}

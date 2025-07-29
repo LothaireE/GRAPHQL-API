@@ -1,0 +1,5 @@
+type Mutation {
+    hello(message: String): String
+    createBook(newBook: BookInput!): Book
+    createAuthor(newAuthor: AuthorInput!): Author
+}

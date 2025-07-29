@@ -1,16 +1,17 @@
 import http from 'http';
-import { server, TEST } from './config/config';
+import { server, POSTGRES_PORT, NODE_ENV } from './config/config';
+import { pool } from './config/config';
+
 import './config/logging';
 import application from './application';
 
-// graphQL
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import resolvers from './graphql/resolvers/index';
-import typeDefs from './graphql/typeDefs/bookTypeDefs';
+import { resolvers } from './graphql/mergedResolver';
+import { typeDefs } from './graphql/mergedTypeDefs';
 
-export let httpServer: ReturnType<typeof http.createServer>; // = http.createServer(application);
+export let httpServer: ReturnType<typeof http.createServer>;
 
 httpServer = http.createServer(application);
 
@@ -20,15 +21,30 @@ let apolloServer = new ApolloServer({
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
 });
 
-const nodeEnv: string = process.env.NODE_ENV?.toUpperCase() || '';
-
 export const Main = async () => {
     logging.log('------------------------------------------');
-    logging.log(`Initializing Node Graphql API in ${nodeEnv} mode`);
+    logging.log(`Initializing Node Graphql API in ${NODE_ENV} mode`);
     logging.log('------------------------------------------');
 
     await apolloServer.start();
     application.use(expressMiddleware(apolloServer));
+    logging.log('------------------------------------------');
+    logging.log('Initializing connection to PostgreSQL');
+    logging.log('------------------------------------------');
+    try {
+        const client = await pool.connect();
+        logging.log('------------------------------------------');
+        logging.log(
+            `PostgreSQL connection successfully on port:${POSTGRES_PORT}`
+        );
+        logging.log('------------------------------------------');
+        client.release();
+    } catch (error) {
+        logging.log('------------------------------------------');
+        logging.error(`PostgreSQL connection failed:${error}`);
+        logging.log('------------------------------------------');
+        process.exit(1);
+    }
 
     httpServer.listen(server.SERVER_PORT, () => {
         logging.log('------------------------------------------');

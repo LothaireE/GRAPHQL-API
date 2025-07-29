@@ -1,12 +1,12 @@
 import Books from '../../data/Books';
 import Authors from '../../data/Authors';
-import { Author } from '../../types/author.type';
-import { Book } from '../../types/book.type';
+import { Author, Book } from '../generated/types.generated';
+import { MutationResolvers } from '../generated/types.generated';
 
-type NewBookInput = Omit<Book, 'id'>;
-type NewAuthorInput = Omit<Author, 'id'>;
+// type NewBookInput = Omit<Book, 'id'>;
+// type NewAuthorInput = Omit<Author, 'id'>;
 
-const mutationResolvers = {
+export const mutationResolvers = <MutationResolvers>{
     Mutation: {
         hello: (_: any, { message }: { message: string }) => {
             const helloMessage = message;
@@ -18,7 +18,7 @@ const mutationResolvers = {
             {
                 newBook
             }: {
-                newBook: NewBookInput;
+                newBook: Book;
             }
         ) {
             const newBookObjId = String(Books.length + 1);
@@ -36,21 +36,17 @@ const mutationResolvers = {
             {
                 newAuthor
             }: {
-                newAuthor: NewAuthorInput;
+                newAuthor: Author;
             }
         ) {
-            console.log('newAuthor', newAuthor);
             const newAuthorObjId = String(Authors.length + 1);
             const newAuthorObj: Author = {
                 ...newAuthor,
                 id: newAuthorObjId
             };
-            console.log('newAuthorObj', newAuthorObj);
 
             Authors.push(newAuthorObj);
             return newAuthorObj;
         }
     }
 };
-
-export default mutationResolvers;
