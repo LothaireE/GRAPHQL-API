@@ -1,0 +1,10 @@
+type Mutation {
+    createBook(newBook: BookInput!): Book
+    createAuthor(newAuthor: AuthorInput!): Author!
+    createManyAuthors(newAuthors: [AuthorInput!]): [Author!]
+    createManyBooks(newBooks: [BookInput!]): [Book!]
+    deleteAllBooks: [Book]
+    deleteAllAuthors: [Author]
+    deleteSingleBook(id: ID!): Book
+    deleteSingleAuthor(id: ID!): Author
+}

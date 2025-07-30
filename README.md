@@ -89,6 +89,7 @@ JWT_SECRET=your_secret
 REFRESH_TOKEN_SECRET=your_refresh_secret
 ```
 
+<!--
 ## Mongoose & Access Middlewares
 
 The API uses Mongoose, but due to abstraction via middlewares, it can easily be
@@ -102,7 +103,7 @@ store.
 | MongoGetAll(model) | Get all                              |
 | MongoUpdate(model) | Update with `req.body`               |
 | MongoDelete(model) | Delete by `req.params.id`            |
-| MongoQuery(model)  | Query by custom fields in `req.body` |
+| MongoQuery(model)  | Query by custom fields in `req.body` | -->
 
 ## JWT Authentication
 

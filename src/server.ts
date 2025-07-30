@@ -1,43 +1,61 @@
 import http from 'http';
-import mongoose from 'mongoose';
-import { mongo, server, TEST } from './config/config';
+import { server, POSTGRES_PORT, NODE_ENV } from './config/config';
+import { pool } from './config/config';
+
 import './config/logging';
 import application from './application';
 
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@as-integrations/express5';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { resolvers } from './graphql/mergedResolver';
+import { typeDefs } from './graphql/mergedTypeDefs';
+import db from './db/db';
+import { GraphQLContext } from './types/context.type';
+
 export let httpServer: ReturnType<typeof http.createServer>;
 
-const nodeEnv: string = process.env.NODE_ENV?.toUpperCase() || '';
+httpServer = http.createServer(application);
+
+// const apolloServer = new ApolloServer({
+const apolloServer = new ApolloServer<GraphQLContext>({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+});
 
 export const Main = async () => {
     logging.log('------------------------------------------');
-    logging.log(`Initializing API in ${nodeEnv} mode`);
+    logging.log(`Initializing Node Graphql API in ${NODE_ENV} mode`);
     logging.log('------------------------------------------');
+
+    await apolloServer.start();
+    // application.use(expressMiddleware(apolloServer));
+    application.use(
+        expressMiddleware(apolloServer, {
+            // context: async ({ req }) => ({ token: req.headers.token }),
+            context: async (): Promise<GraphQLContext> => ({ db })
+            // context: async () => ({ db })
+        })
+    );
     logging.log('------------------------------------------');
-    logging.log('Initializing connection to Mongo');
+    logging.log('Initializing connection to PostgreSQL');
     logging.log('------------------------------------------');
-    if (!TEST) {
-        try {
-            const connection = await mongoose.connect(
-                mongo.MONGO_CONNECTION,
-                mongo.MONGO_OPTION
-            );
-            logging.log('------------------------------------------');
-            logging.log(
-                `Connected to Mongo using version: ${connection.version}`
-            );
-            logging.log('------------------------------------------');
-        } catch (error) {
-            logging.log('------------------------------------------');
-            logging.info('Unable to connect to Mongo');
-            logging.error(error);
-            logging.log('------------------------------------------');
-        }
+    try {
+        const client = await pool.connect();
+        logging.log('------------------------------------------');
+        logging.log(
+            `PostgreSQL connection successfully on port:${POSTGRES_PORT}`
+        );
+        logging.log('------------------------------------------');
+        client.release();
+    } catch (error) {
+        logging.log('------------------------------------------');
+        logging.error(`PostgreSQL connection failed:${error}`);
+        logging.log('------------------------------------------');
+        process.exit(1);
     }
 
-    logging.log('------------------------------------------');
-    logging.log('Starting HTTP Server');
-    logging.log('------------------------------------------');
-    httpServer = http.createServer(application);
     httpServer.listen(server.SERVER_PORT, () => {
         logging.log('------------------------------------------');
         logging.log(
