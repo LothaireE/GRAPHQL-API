@@ -1,7 +1,6 @@
 type Query {
-    hello: String
-    authors: [Author]
-    books: [Book]
-    book(id: ID!): Book
+    authors: [Author!]!
+    books: [Book!]!
     author(id: ID!): Author
+    book(id: ID!): Book
 }

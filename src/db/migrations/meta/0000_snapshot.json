@@ -1,5 +1,5 @@
 {
-  "id": "72c5ae9f-1777-4458-8645-34ebf64e2d1a",
+  "id": "481af05a-85a7-4942-b529-60962e01aafd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "first_name": {
           "name": "first_name",
@@ -61,13 +62,13 @@
       "columns": {
         "book_id": {
           "name": "book_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
         "genre_id": {
           "name": "genre_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -133,9 +134,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "title": {
           "name": "title",
@@ -151,7 +153,7 @@
         },
         "author_id": {
           "name": "author_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -210,9 +212,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -257,19 +260,20 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.refresh_token": {
-      "name": "refresh_token",
+    "public.refresh_tokens": {
+      "name": "refresh_tokens",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -295,9 +299,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "refresh_token_user_id_users_id_fk": {
-          "name": "refresh_token_user_id_users_id_fk",
-          "tableFrom": "refresh_token",
+        "refresh_tokens_user_id_users_id_fk": {
+          "name": "refresh_tokens_user_id_users_id_fk",
+          "tableFrom": "refresh_tokens",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -311,8 +315,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "refresh_token_token_unique": {
-          "name": "refresh_token_token_unique",
+        "refresh_tokens_token_unique": {
+          "name": "refresh_tokens_token_unique",
           "nullsNotDistinct": false,
           "columns": [
             "token"
@@ -329,9 +333,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "username": {
           "name": "username",

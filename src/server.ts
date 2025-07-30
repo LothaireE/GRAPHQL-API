@@ -10,12 +10,15 @@ import { expressMiddleware } from '@as-integrations/express5';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { resolvers } from './graphql/mergedResolver';
 import { typeDefs } from './graphql/mergedTypeDefs';
+import db from './db/db';
+import { GraphQLContext } from './types/context.type';
 
 export let httpServer: ReturnType<typeof http.createServer>;
 
 httpServer = http.createServer(application);
 
-let apolloServer = new ApolloServer({
+// const apolloServer = new ApolloServer({
+const apolloServer = new ApolloServer<GraphQLContext>({
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
@@ -27,7 +30,14 @@ export const Main = async () => {
     logging.log('------------------------------------------');
 
     await apolloServer.start();
-    application.use(expressMiddleware(apolloServer));
+    // application.use(expressMiddleware(apolloServer));
+    application.use(
+        expressMiddleware(apolloServer, {
+            // context: async ({ req }) => ({ token: req.headers.token }),
+            context: async (): Promise<GraphQLContext> => ({ db })
+            // context: async () => ({ db })
+        })
+    );
     logging.log('------------------------------------------');
     logging.log('Initializing connection to PostgreSQL');
     logging.log('------------------------------------------');

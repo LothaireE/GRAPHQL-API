@@ -1,5 +1,10 @@
 type Mutation {
-    hello(message: String): String
     createBook(newBook: BookInput!): Book
-    createAuthor(newAuthor: AuthorInput!): Author
+    createAuthor(newAuthor: AuthorInput!): Author!
+    createManyAuthors(newAuthors: [AuthorInput!]): [Author!]
+    createManyBooks(newBooks: [BookInput!]): [Book!]
+    deleteAllBooks: [Book]
+    deleteAllAuthors: [Author]
+    deleteSingleBook(id: ID!): Book
+    deleteSingleAuthor(id: ID!): Author
 }

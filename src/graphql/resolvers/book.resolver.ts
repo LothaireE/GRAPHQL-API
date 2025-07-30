@@ -1,8 +1,13 @@
-import Authors from '../../data/Authors';
+import { authors } from '../../db/schema';
+import { eq } from 'drizzle-orm';
+import { Book, BookResolvers } from '../generated/types.generated';
+import { GraphQLContext } from '../../types/context.type';
 
-export const bookResolvers = {
+export const bookResolvers = <BookResolvers>{
     Book: {
-        author: (book: any) =>
-            Authors.find((author) => author.id === book.authorId)
+        author: async (parent: Book, args: {}, context: GraphQLContext) =>
+            await context.db.query.authors.findFirst({
+                where: eq(authors.id, parent.authorId)
+            })
     }
 };

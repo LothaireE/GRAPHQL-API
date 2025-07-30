@@ -1,9 +1,16 @@
+# type Author {
+#     id: ID!
+#     firstName: String!
+#     lastName: String!
+#     books: [Book]
+# }
 type Author {
     id: ID!
-    name: String!
-    books: [Book]
+    firstName: String!
+    lastName: String!
+    books: [Book!]! # each author can han multiple book so book.resolver
 }
-
 input AuthorInput {
-    name: String!
+    firstName: String!
+    lastName: String!
 }
