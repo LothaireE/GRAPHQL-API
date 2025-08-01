@@ -3,13 +3,21 @@ type Book {
     title: String!
     publicationYear: Int!
     description: String
-    authorId: ID!
+    authorId: ID! # I have to specify this authorId key to make it non null-able
     author: Author!
     createdAt: String!
     updatedAt: String!
 }
 
 input BookInput {
+    title: String!
+    authorId: ID!
+    description: String
+    publicationYear: Int!
+}
+
+input UpdateBookInput {
+    id: ID!
     title: String!
     authorId: ID!
     description: String

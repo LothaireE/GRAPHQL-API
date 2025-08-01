@@ -10,11 +10,13 @@ import { routeNotFound } from '../middleware/routeNotFound';
 // }
 
 // Dual server way
+// starting base for any REST route outside of GraphQL
 export default function setupRoutes(application: Express) {
     application.use('/api', [healthCheckRoutes]);
     application.use(routeNotFound);
 }
 
+// separated auth routes from graphql
 export function setupAuthRoutes(application: Express) {
     application.use('/api', [authRoutes]);
     application.use(routeNotFound);

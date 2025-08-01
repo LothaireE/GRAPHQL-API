@@ -10,7 +10,8 @@ application.use(
     express.urlencoded({ extended: true }),
     express.json(),
     loggingHandler,
-    corsHandler
+    corsHandler,
+    declareHandler
     // add an authentication middleware
 );
 

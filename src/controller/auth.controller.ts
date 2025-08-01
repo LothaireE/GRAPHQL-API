@@ -1,119 +1,145 @@
 import { Request, Response } from 'express';
-import UserModel from '../models/user.model';
-import bcrypt from 'bcrypt';
+import { UserType } from '../types/user';
 import {
+    addDaysFromNow,
     generateAccessToken,
     generateRefreshToken,
     verifyRefreshToken
-} from '../utils/handleToken';
+} from '../utils/tokens';
 import { AUTH_SERVER_LABEL } from '../config/config';
+import AuthService from '../services/auth.services';
+import { RefreshTokenModel } from '../models/refreshToken.model';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/messages';
 
-let refreshTokens: string[] = []; // To be stored in a database or cache at some point
+export const toPublicUser = (user: UserType) => ({
+    id: user.id,
+    username: user.username,
+    email: user.email
+});
 
 class AuthController {
     static async login(req: Request, res: Response) {
         const { email, password } = req.body;
 
-        const user = await UserModel.findOne(email);
+        try {
+            const { user, accessToken, refreshToken } = await AuthService.login(
+                { email, password }
+            );
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            const safeUser = toPublicUser(user);
+            return res.status(200).json({
+                message: SUCCESS_MESSAGES.AUTH.LOGIN_SUCCESS,
+                data: {
+                    user: safeUser,
+                    accessToken,
+                    refreshToken
+                }
+            });
+        } catch (error: any) {
+            if (error.message === 'INVALID_CREDENTIALS')
+                res.status(401).json({
+                    error: ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS
+                });
+            return res
+                .status(500)
+                .json({ error: ERROR_MESSAGES.COMMON.INTERNAL_ERROR });
         }
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        const accessToken = generateAccessToken(email, 'login');
-
-        const refreshToken = generateRefreshToken(email);
-        refreshTokens.push(refreshToken);
-        logging.info(
-            `User ${user.name} signed up successfully`,
-            AUTH_SERVER_LABEL
-        );
-        return res.status(200).json({
-            message: 'User logged in successfully',
-            data: {
-                // id: user._id,
-                email: user.email,
-                accessToken,
-                refreshToken
-            }
-        });
     }
 
     static async signup(req: Request, res: Response) {
-        const { name, email, password } = req.body;
+        const { username, email, password } = req.body;
 
-        const existing = await UserModel.findOne(email);
-        if (existing) {
-            return res.status(409).json({ error: 'Email already registered' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await UserModel.create({
-            name,
-            email,
-            password: hashedPassword
-        });
-
-        logging.info(
-            `User ${newUser.name} signed up successfully`,
-            AUTH_SERVER_LABEL
-        );
-
-        return res.status(201).json({
-            message: 'User signed up successfully',
-            user: {
-                // id: newUser._id,
-                email: newUser.email,
-                name: newUser.name
+        try {
+            const newUser = await AuthService.signup({
+                username,
+                email,
+                password
+            });
+            const safeUser = toPublicUser(newUser);
+            return res.status(201).json({
+                message: SUCCESS_MESSAGES.AUTH.SIGNUP_SUCCESS,
+                user: safeUser
+            });
+        } catch (error: any) {
+            logging.error(error, AUTH_SERVER_LABEL);
+            if (error.message === 'EMAIL_ALREADY_EXIST') {
+                return res
+                    .status(409)
+                    .json({ error: ERROR_MESSAGES.AUTH.EMAIL_ALREADY_EXISTS });
             }
-        });
+            return res
+                .status(500)
+                .json({ error: ERROR_MESSAGES.COMMON.INTERNAL_ERROR });
+        }
     }
 
     static async refreshToken(req: Request, res: Response) {
-        const refreshToken = req.body.token; // the refresh token should be stored in a database or cache
-
-        if (!refreshToken)
-            return res.status(401).json({ error: 'Refresh token is required' });
-        if (!refreshTokens.includes(refreshToken))
+        const oldToken = req.body.token; // the refresh token rotation
+        if (!oldToken)
             return res
-                .status(403)
-                .json({ error: 'Refresh token is not valid' });
+                .status(401)
+                .json({ error: ERROR_MESSAGES.AUTH.REFRESH_TOKEN_REQUIRED });
 
         try {
-            const decodedToken = verifyRefreshToken(refreshToken);
+            const decodedToken = verifyRefreshToken(oldToken);
+
+            const valid = await RefreshTokenModel.isValid(oldToken);
+            if (!valid)
+                res.status(403).json({
+                    error: ERROR_MESSAGES.AUTH.REFRESH_TOKEN_NOT_FOUND
+                });
+
+            await RefreshTokenModel.revoke(oldToken);
+
             const newAccessToken = generateAccessToken(
-                decodedToken.email,
+                decodedToken.userId,
+                decodedToken.username,
                 'refresh'
             );
 
-            logging.info(
-                'Access token refreshed successfully',
-                AUTH_SERVER_LABEL
+            const newRefreshToken = generateRefreshToken(
+                decodedToken.userId,
+                decodedToken.username
             );
+
+            const expiresAt = addDaysFromNow();
+
+            await RefreshTokenModel.store(
+                decodedToken.userId,
+                newRefreshToken,
+                expiresAt
+            );
+
             return res.status(201).json({
-                message: 'Access token refreshed successfully',
+                message: SUCCESS_MESSAGES.AUTH.TOKEN_REFRESHED,
                 data: {
-                    accessToken: newAccessToken
+                    accessToken: newAccessToken,
+                    refreshTokens: newRefreshToken
                 }
             });
         } catch (error) {
+            logging.error(error, AUTH_SERVER_LABEL);
             return res.status(403).json({ error: 'Invalid refresh token' });
         }
     }
 
     static async logout(req: Request, res: Response) {
-        refreshTokens = refreshTokens.filter(
-            (token) => token !== req.body.token
-        );
-        logging.info('User logged out successfully', AUTH_SERVER_LABEL);
-        return res.status(204);
+        const token = req.body.token;
+        res.status(400).json({ error: 'Refresh token is required for logout' });
+
+        if (!token)
+            res.status(400).json({
+                error: 'Refresh token is required for logout'
+            });
+
+        try {
+            await RefreshTokenModel.revoke(token);
+            logging.info('User logged out successfully', AUTH_SERVER_LABEL);
+            return res.status(204).end();
+        } catch (error) {
+            logging.error(error, AUTH_SERVER_LABEL);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
     }
 }
 

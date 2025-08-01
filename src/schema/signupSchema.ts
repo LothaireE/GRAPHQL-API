@@ -7,9 +7,9 @@
  * @property validateAsync - Asynchronously validates the provided data object.
  * Throws an error with a `details` property containing validation messages if validation fails.
  */
-
+import { ERROR_MESSAGES } from '../constants/messages';
 type signupData = {
-    name: string;
+    username: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -20,19 +20,19 @@ export const signupSchema = {
         const errors: string[] = [];
 
         if (
-            !data.name ||
-            typeof data.name !== 'string' ||
-            data.name.trim() === '' ||
-            data.name.length < 2
+            !data.username ||
+            typeof data.username !== 'string' ||
+            data.username.trim() === '' ||
+            data.username.length < 2
         ) {
-            errors.push('Invalid or missing name.');
+            errors.push(ERROR_MESSAGES.AUTH.INVALID_USERNAME);
         }
         if (
             !data.email ||
             typeof data.email !== 'string' ||
             !data.email.includes('@')
         ) {
-            errors.push('Invalid or missing email.');
+            errors.push(ERROR_MESSAGES.AUTH.INVALID_EMAIL);
         }
 
         if (
@@ -40,7 +40,7 @@ export const signupSchema = {
             typeof data.password !== 'string' ||
             data.password.length < 6
         ) {
-            errors.push('Invalid or missing password.');
+            errors.push(ERROR_MESSAGES.AUTH.INVALID_PASSWORD);
         }
 
         if (
@@ -49,7 +49,7 @@ export const signupSchema = {
             data.confirmPassword.length < 6 ||
             data.confirmPassword !== data.password
         ) {
-            errors.push('Invalid or missing confirm password.');
+            errors.push(ERROR_MESSAGES.AUTH.INVALID_CONFIRM_PASSWORD);
         }
 
         if (errors.length > 0) {
@@ -59,7 +59,7 @@ export const signupSchema = {
         }
 
         const validData = {
-            name: data.name.trim(),
+            username: data.username,
             email: data.email.trim(),
             password: data.password
         };

@@ -10,7 +10,7 @@ import {
 const timestamps = {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    deleted_at: timestamp()
+    deletedAt: timestamp('deleted_at')
 };
 
 export const users = pgTable('users', {

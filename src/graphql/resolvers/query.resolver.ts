@@ -6,9 +6,9 @@ import { GraphQLContext } from '../../types/context.type';
 
 export const queryResolvers = <QueryResolvers>{
     Query: {
-        //WARNING que du `await` sur la document avant chaque db
-        authors: (_: any, __: any, context: GraphQLContext) =>
-            context.db.select().from(authors),
+        authors: (_: any, __: any, context: GraphQLContext) => {
+            context.db.select().from(authors);
+        },
         books: (_: any, __: any, context: GraphQLContext) =>
             context.db.select().from(books),
 

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../../config/config';
 import { AuthorizedUser } from '../../types/user';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 export function verifyAccessToken(schema: any = null) {
     return async function (req: Request, res: Response, next: NextFunction) {
@@ -10,7 +11,7 @@ export function verifyAccessToken(schema: any = null) {
         if (!authHeader)
             return res
                 .status(401)
-                .json({ error: 'Authorization header is missing' });
+                .json({ error: ERROR_MESSAGES.AUTH.MISSING_HEADER });
 
         const token = authHeader.split(' ')[1];
 
@@ -22,7 +23,7 @@ export function verifyAccessToken(schema: any = null) {
             req.authorizedUser = verifiedUser;
             next();
         } catch (error) {
-            res.status(403).json({ error: 'Invalid token' });
+            res.status(403).json({ error: ERROR_MESSAGES.AUTH.INVALID_TOKEN });
         }
     };
 }

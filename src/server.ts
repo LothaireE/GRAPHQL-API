@@ -1,27 +1,31 @@
-import http from 'http';
+import db from './db/db';
+import './config/logging';
 import { server, POSTGRES_PORT, NODE_ENV } from './config/config';
 import { pool } from './config/config';
-
-import './config/logging';
+import http from 'http';
 import application from './application';
-
-import { ApolloServer } from '@apollo/server';
+import { GraphQLContext } from './types/context.type';
 import { expressMiddleware } from '@as-integrations/express5';
+import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { resolvers } from './graphql/mergedResolver';
 import { typeDefs } from './graphql/mergedTypeDefs';
-import db from './db/db';
-import { GraphQLContext } from './types/context.type';
+import { decodeAccessToken } from './utils/tokens';
 
 export let httpServer: ReturnType<typeof http.createServer>;
 
 httpServer = http.createServer(application);
 
-// const apolloServer = new ApolloServer({
 const apolloServer = new ApolloServer<GraphQLContext>({
     typeDefs,
     resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    introspection: true,
+    formatError: (err) => {
+        logging.error('from APOLLO SERVER');
+        logging.error(JSON.stringify(err, null, 2));
+        return err;
+    }
 });
 
 export const Main = async () => {
@@ -30,16 +34,16 @@ export const Main = async () => {
     logging.log('------------------------------------------');
 
     await apolloServer.start();
-    // application.use(expressMiddleware(apolloServer));
     application.use(
         expressMiddleware(apolloServer, {
-            // context: async ({ req }) => ({ token: req.headers.token }),
-            context: async (): Promise<GraphQLContext> => ({ db })
-            // context: async () => ({ db })
+            context: async ({ req }): Promise<GraphQLContext> => {
+                const token = decodeAccessToken(req.headers.authorization);
+                return { db, token };
+            }
         })
     );
     logging.log('------------------------------------------');
-    logging.log('Initializing connection to PostgreSQL');
+    logging.log('Initializing connection to Postgres');
     logging.log('------------------------------------------');
     try {
         const client = await pool.connect();

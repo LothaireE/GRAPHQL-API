@@ -51,13 +51,15 @@ export type BookInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createAuthor: Author;
-  createBook?: Maybe<Book>;
+  createBook: Book;
   createManyAuthors?: Maybe<Array<Author>>;
   createManyBooks?: Maybe<Array<Book>>;
   deleteAllAuthors?: Maybe<Array<Maybe<Author>>>;
   deleteAllBooks?: Maybe<Array<Maybe<Book>>>;
   deleteSingleAuthor?: Maybe<Author>;
   deleteSingleBook?: Maybe<Book>;
+  updateAuthor: Author;
+  updateBook: Book;
 };
 
 
@@ -90,6 +92,16 @@ export type MutationDeleteSingleBookArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type MutationUpdateAuthorArgs = {
+  authorUpdates: UpdateAuthorInput;
+};
+
+
+export type MutationUpdateBookArgs = {
+  bookUpdates: UpdateBookInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   author?: Maybe<Author>;
@@ -106,6 +118,20 @@ export type QueryAuthorArgs = {
 
 export type QueryBookArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type UpdateAuthorInput = {
+  firstName: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  lastName: Scalars['String']['input'];
+};
+
+export type UpdateBookInput = {
+  authorId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  publicationYear: Scalars['Int']['input'];
+  title: Scalars['String']['input'];
 };
 
 
@@ -189,6 +215,8 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  UpdateAuthorInput: UpdateAuthorInput;
+  UpdateBookInput: UpdateBookInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -203,6 +231,8 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
+  UpdateAuthorInput: UpdateAuthorInput;
+  UpdateBookInput: UpdateBookInput;
 };
 
 export type AuthorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Author'] = ResolversParentTypes['Author']> = {
@@ -227,13 +257,15 @@ export type BookResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createAuthor?: Resolver<ResolversTypes['Author'], ParentType, ContextType, RequireFields<MutationCreateAuthorArgs, 'newAuthor'>>;
-  createBook?: Resolver<Maybe<ResolversTypes['Book']>, ParentType, ContextType, RequireFields<MutationCreateBookArgs, 'newBook'>>;
+  createBook?: Resolver<ResolversTypes['Book'], ParentType, ContextType, RequireFields<MutationCreateBookArgs, 'newBook'>>;
   createManyAuthors?: Resolver<Maybe<Array<ResolversTypes['Author']>>, ParentType, ContextType, Partial<MutationCreateManyAuthorsArgs>>;
   createManyBooks?: Resolver<Maybe<Array<ResolversTypes['Book']>>, ParentType, ContextType, Partial<MutationCreateManyBooksArgs>>;
   deleteAllAuthors?: Resolver<Maybe<Array<Maybe<ResolversTypes['Author']>>>, ParentType, ContextType>;
   deleteAllBooks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book']>>>, ParentType, ContextType>;
   deleteSingleAuthor?: Resolver<Maybe<ResolversTypes['Author']>, ParentType, ContextType, RequireFields<MutationDeleteSingleAuthorArgs, 'id'>>;
   deleteSingleBook?: Resolver<Maybe<ResolversTypes['Book']>, ParentType, ContextType, RequireFields<MutationDeleteSingleBookArgs, 'id'>>;
+  updateAuthor?: Resolver<ResolversTypes['Author'], ParentType, ContextType, RequireFields<MutationUpdateAuthorArgs, 'authorUpdates'>>;
+  updateBook?: Resolver<ResolversTypes['Book'], ParentType, ContextType, RequireFields<MutationUpdateBookArgs, 'bookUpdates'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {

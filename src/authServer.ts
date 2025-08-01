@@ -1,43 +1,59 @@
 import http from 'http';
-import { authServer, TEST, AUTH_SERVER_LABEL } from './config/config';
+import {
+    TEST,
+    AUTH_SERVER_LABEL,
+    NODE_ENV,
+    POSTGRES_PORT,
+    pool,
+    authServer
+} from './config/config';
 import './config/logging';
 import authApplication from './authApplication';
 
 export let httpServer: ReturnType<typeof http.createServer>;
-
-const nodeEnv: string = process.env.NODE_ENV?.toUpperCase() || '';
+httpServer = http.createServer(authApplication);
 
 export const Main = async () => {
     logging.log(
         '------------------------------------------',
         AUTH_SERVER_LABEL
     );
-    logging.log(`Initializing auth Server in ${nodeEnv} mode`);
+    logging.log(`Initializing auth Server in ${NODE_ENV} mode`);
     logging.log(
         '------------------------------------------',
         AUTH_SERVER_LABEL
     );
-    // logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    // logging.log('Initializing connection to Mongo', AUTH_SERVER_LABEL);
-    // logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    // if (!TEST) {
-    //     try {
-    //         const connection = await mongoose.connect(
-    //             mongo.MONGO_CONNECTION,
-    //             mongo.MONGO_OPTION
-    //         );
-    //         logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    //         logging.log(
-    //             `Connected to Mongo using version: ${connection.version}`
-    //         );
-    //         logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    //     } catch (error) {
-    //         logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    //         logging.info('Unable to connect to Mongo', AUTH_SERVER_LABEL);
-    //         logging.error(error);
-    //         logging.log('------------------------------------------', AUTH_SERVER_LABEL);
-    //     }
-    // }
+    logging.log(
+        '------------------------------------------',
+        AUTH_SERVER_LABEL
+    );
+    logging.log('Initializing connection to Postgres', AUTH_SERVER_LABEL);
+    logging.log(
+        '------------------------------------------',
+        AUTH_SERVER_LABEL
+    );
+    if (!TEST) {
+        try {
+            const client = await pool.connect();
+            logging.log('------------------------------------------');
+            logging.log(
+                `PostgreSQL connection successfully on port:${POSTGRES_PORT}`
+            );
+            logging.log('------------------------------------------');
+            client.release();
+        } catch (error) {
+            logging.log(
+                '------------------------------------------',
+                AUTH_SERVER_LABEL
+            );
+            logging.info('Unable to connect to Postgres', AUTH_SERVER_LABEL);
+            logging.error(error);
+            logging.log(
+                '------------------------------------------',
+                AUTH_SERVER_LABEL
+            );
+        }
+    }
 
     logging.log(
         '------------------------------------------',
@@ -48,7 +64,6 @@ export const Main = async () => {
         '------------------------------------------',
         AUTH_SERVER_LABEL
     );
-    httpServer = http.createServer(authApplication);
     httpServer.listen(authServer.SERVER_PORT, () => {
         logging.log(
             '------------------------------------------',

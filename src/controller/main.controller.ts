@@ -12,10 +12,10 @@ class HealthController {
         if (!req.authorizedUser) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
-        const { email } = req.authorizedUser;
+        const { username } = req.authorizedUser;
 
         return res.status(200).json({
-            message: `Detailed health performed for user: ${email}`,
+            message: `Detailed health performed for user: ${username}`,
             details: {
                 uptime: process.uptime(),
                 memoryUsage: process.memoryUsage(),

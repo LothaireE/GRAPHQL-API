@@ -10,7 +10,15 @@ type Author {
     lastName: String!
     books: [Book!]! # each author can han multiple book so book.resolver
 }
+
 input AuthorInput {
     firstName: String!
     lastName: String!
+}
+
+input UpdateAuthorInput {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    # updateAt: String
 }
